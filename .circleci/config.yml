@@ -17,8 +17,13 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
 
       - run:
-          name: Install npm dependencies
-          command: npm install
+          name: Install dependencies
+          command: npm ci
+
+      - run:
+          name: Fix Jest permissions
+          command: chmod +x ./node_modules/.bin/jest
+
       - run:
           name: Run tests
           command: npm test
