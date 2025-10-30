@@ -1,0 +1,48 @@
+version: 2.1
+
+# Define the jobs we want to run for this project
+jobs:
+  build:
+    working_directory:~/public
+    docker:
+      - image: circleci/node:24.11.0
+    steps:
+      - checkout
+      - run:
+          name: update-npm
+          command:"npm install -g npm@latest"
+      -restore_cache:
+          key: dependency-cache-{{checksum "package.json"}}
+      -run:
+          name: install-npm-wee
+          command: npm install
+
+      -save_cache:
+          key:dependency-cache-{{checksum "package.json"}}
+          paths:
+            - ./node_modules
+      -run:
+          name: test
+          command: npm test
+      -store_artifacts:
+          paths: test-results.xml
+          prefix: tests
+      -store_artifacts:
+          paths: coverage
+          prefix: coverage
+      -store_test_results:
+          path: test-results.xml
+  # test:
+  #   docker:
+  #     - image: cimg/base:2023.03
+  #   steps:
+  #     - checkout
+  #     - run: echo "this is the test job"
+     
+
+# Orchestrate our job run sequence
+workflows:
+  build_and_test:
+    jobs:
+      - build
+      - test
