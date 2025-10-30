@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/public
     docker:
-      - image: circleci/node:24.11.0
+      - image: cimg/node:24.11.0  # ✅ Updated image name
 
     steps:
       - checkout
