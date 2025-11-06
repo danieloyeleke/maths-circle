@@ -45,28 +45,21 @@ jobs:
           path: test-results.xml
 
   # 🐳 New Deploy Job
+
   deploy:
     docker:
       - image: cimg/base:stable
+    context: dockerhub-creds
     steps:
       - checkout
-
-      - run:
-          name: Install Docker CLI
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y docker.io
-
       - run:
           name: Build Docker image
-          command: |
-            docker build -t your-dockerhub-username/your-app-name:latest .
-
+          command: docker build -t dancraftdocker/maths-circle:latest .
       - run:
-          name: Push image to Docker Hub
+          name: Push to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-            docker push your-dockerhub-username/your-app-name:latest
+            docker push dancraftdocker/maths-circle:latest
 
 workflows:
   version: 2
