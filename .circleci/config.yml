@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/public
     docker:
-      - image: cimg/node:24.11.0  # ✅ Updated image name
+      - image: cimg/node:24.11.0  # ✅ Node.js environment
 
     steps:
       - checkout
@@ -33,8 +33,6 @@ jobs:
           paths:
             - ./node_modules
 
-      
-
       - store_artifacts:
           path: test-results.xml
           prefix: tests
@@ -45,3 +43,39 @@ jobs:
 
       - store_test_results:
           path: test-results.xml
+
+  # 🐳 New Deploy Job
+  deploy:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+
+      - run:
+          name: Install Docker CLI
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y docker.io
+
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t your-dockerhub-username/your-app-name:latest .
+
+      - run:
+          name: Push image to Docker Hub
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+            docker push your-dockerhub-username/your-app-name:latest
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: main  
