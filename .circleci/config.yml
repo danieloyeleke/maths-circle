@@ -68,6 +68,7 @@ workflows:
       - deploy:
           requires:
             - build
+          context: dockerhub-creds
           filters:
             branches:
               only: main
